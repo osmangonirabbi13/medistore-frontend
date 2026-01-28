@@ -1,6 +1,5 @@
-"use client";
-
-import { Button } from "@/components/ui/button";
+"use client"
+import { Button } from "@/components/ui/button"
 import {
   Card,
   CardContent,
@@ -8,30 +7,30 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import {
-  Field,
-  FieldError,
-  FieldGroup,
-  FieldLabel,
-} from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
-import { authClient } from "@/lib/auth-client";
-import { useForm } from "@tanstack/react-form";
-import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
-import { toast } from "sonner";
-import * as z from "zod";
+} from "@/components/ui/card"
+import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field"
+import { Input } from "@/components/ui/input"
+import { authClient } from "@/lib/auth-client"
+
+import{ useForm }from "@tanstack/react-form"
+import Link from "next/link"
+import { useRouter, useSearchParams } from "next/navigation"
+import { toast } from "sonner"
+import * as z from "zod"
 
 const formSchema = z.object({
+  name: z.string().min(1, "This field is required"),
   password: z.string().min(8, "Minimum length is 8"),
   email: z.email(),
 });
 
-export function LoginForm({ ...props }: React.ComponentProps<typeof Card>) {
+
+export function RegisterForm({ ...props }: React.ComponentProps<typeof Card>) {
+
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirect = searchParams.get("redirect");
+
   const handleGoogleLogin = async () => {
     const data = authClient.signIn.social({
       provider: "google",
@@ -40,52 +39,74 @@ export function LoginForm({ ...props }: React.ComponentProps<typeof Card>) {
         : window.location.origin,
     });
 
+    
   };
-
+  
   const form = useForm({
-    defaultValues: {
-      email: "",
-      password: "",
+    defaultValues:{
+      name : "",
+      email:"",
+      password : ""
     },
-    validators: {
+     validators: {
       onSubmit: formSchema,
     },
-    onSubmit: async ({ value }) => {
-      const toastId = toast.loading("Logging in");
+    onSubmit : async ({value})=>{
+       const toastId = toast.loading("Creating user");
       try {
-        const { data, error } = await authClient.signIn.email(value);
+        const { data, error } = await authClient.signUp.email(value);
 
         if (error) {
           toast.error(error.message, { id: toastId });
           return;
         }
-
-        toast.success("User Logged in Successfully", { id: toastId });
-        router.push(redirect || "/");
+         toast.success("Account created! Please check your email to verify.", { id: toastId });
+         router.push(redirect || "/");
         router.refresh();
       } catch (err) {
         toast.error("Something went wrong, please try again.", { id: toastId });
       }
-    },
-  });
+    }
+  })
 
   return (
-    <Card {...props}>
+    <FieldGroup>
       <CardHeader>
-        <CardTitle className="text-2xl text-center">Login to your account</CardTitle>
+        <CardTitle className="text-2xl text-center p-6">Create an account</CardTitle>
         <CardDescription>
-          Enter your email below to login to your account
+          Enter your information below to create your account
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <form
-          id="login-form"
-          onSubmit={(e) => {
-            e.preventDefault();
-            form.handleSubmit();
-          }}
-        >
+        <form id="login-form" onSubmit ={(e)=>{
+          e.preventDefault()
+          form.handleSubmit()
+        }
+        }>
+
           <FieldGroup>
+           <form.Field
+              name="name"
+              children={(field) => {
+                const isInvalid =
+                  field.state.meta.isTouched && !field.state.meta.isValid;
+                return (
+                  <Field data-invalid={isInvalid}>
+                    <FieldLabel htmlFor={field.name}>Name</FieldLabel>
+                    <Input
+                      type="text"
+                      id={field.name}
+                      name={field.name}
+                      value={field.state.value}
+                      onChange={(e) => field.handleChange(e.target.value)}
+                    />
+                    {isInvalid && (
+                      <FieldError errors={field.state.meta.errors} />
+                    )}
+                  </Field>
+                );
+              }}
+            />
             <form.Field
               name="email"
               children={(field) => {
@@ -131,30 +152,31 @@ export function LoginForm({ ...props }: React.ComponentProps<typeof Card>) {
               }}
             />
           </FieldGroup>
+
         </form>
       </CardContent>
       <CardFooter className="flex flex-col gap-5 justify-end">
-        <Button form="login-form" type="submit" className="w-full">
-          Login
+        <Button form="login-form" type="submit" className="w-full cursor-pointer">
+          Register
         </Button>
         <Button
           onClick={() => handleGoogleLogin()}
           variant="outline"
           type="button"
-          className="w-full"
+          className="w-full cursor-pointer"
         >
           Continue with Google
         </Button>
         <p className="text-center text-sm text-muted-foreground pt-1">
-           Don't have an account?{" "}
+            Already have an account?{" "}
             <Link
-              href="/register"
+              href="/login"
               className="font-semibold text-primary hover:underline"
             >
-              Register now
+              Login
             </Link>
           </p>
       </CardFooter>
-    </Card>
-  );
+    </FieldGroup>
+  )
 }
