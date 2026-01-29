@@ -7,13 +7,14 @@ interface ServiceOptions {
   revalidate?: number;
 }
 
-interface GetAllMedicineParams {
+export interface GetAllMedicineParams {
+  page?: string;      
+  limit?: string;
   search?: string;
-  page: number;
-  limit: number;
-  skip: number;
-  sortBy: string;
-  sortOrder: "asc" | "desc";
+  isActive?: string;  
+  sortBy?: string;
+  sortOrder?: "asc" | "desc";
+  skip?: string;     
 }
 
 export const productService = {
@@ -26,27 +27,41 @@ export const productService = {
 
       if (params) {
         Object.entries(params).forEach(([key, value]) => {
-          if (value !== undefined && value !== null && value !== "") {
-            url.searchParams.append(key, value);
-          }
+          if (value === undefined || value === null || value === "") return;
+          url.searchParams.set(key, String(value));
         });
       }
 
-      const config: RequestInit = {};
-
-      if (options?.cache) {
-        config.cache = options.cache;
-      }
-
-      if (options?.revalidate) {
-        config.next = { revalidate: options.revalidate };
-      }
-
-      config.next = { ...config.next, tags: ["productPost"] };
+      const config: RequestInit = {
+        cache: options?.cache,
+        next: {
+          tags: ["productPost"],
+          ...(typeof options?.revalidate === "number"
+            ? { revalidate: options.revalidate }
+            : {}),
+        },
+      };
 
       const res = await fetch(url.toString(), config);
       const data = await res.json();
 
+      if (!res.ok) {
+        return {
+          data: null,
+          error: { message: data?.message || "Failed to fetch products" },
+        };
+      }
+
+      return { data, error: null };
+    } catch (err) {
+      return { data: null, error: { message: "Something Went Wrong" } };
+    }
+  },
+   getProductId: async function (id: string) {
+    try {
+      const res = await fetch(`${API_URL}/api/medicines/${id}`);
+
+      const data = await res.json();
 
       return { data: data, error: null };
     } catch (err) {
