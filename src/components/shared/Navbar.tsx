@@ -29,16 +29,26 @@ export default function Navbar() {
   const isLoggedIn = !!user;
 
   const role = user?.role; 
-  const isAdminOrSeller = role === Roles.admin || role === Roles.seller;
-
+  
   const accountLink = useMemo(() => {
+  if (!role) return "/profile";
 
-    return isAdminOrSeller ? "/dashboard" : "/profile";
-  }, [isAdminOrSeller]);
+  if (role === Roles.admin) return "/admin-dashboard";
+  if (role === Roles.seller) return "/seller-dashboard";
 
-  const accountLabel = useMemo(() => {
-    return isAdminOrSeller ? "Dashboard" : "Profile";
-  }, [isAdminOrSeller]);
+  return "/profile";
+}, [role]);
+
+ const accountLabel = useMemo(() => {
+  if (!role) return "Profile";
+
+  if (role === Roles.admin) return "Admin Dashboard";
+  if (role === Roles.seller) return "Seller Dashboard";
+
+  return "Profile";
+}, [role]);
+
+const isAdminOrSeller = role === Roles.admin || role === Roles.seller;
 
   const handleLogOut = async () => {
     const toastId = toast.loading("Logging out...");

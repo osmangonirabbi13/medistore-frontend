@@ -13,11 +13,25 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar"
+import { Roles } from "@/constants/roles";
+import { userService } from "@/services/user/user.service";
 
-export default function Page() {
+export default async function DashboardLayout({
+  admin,
+  seller,
+}: {
+  children: React.ReactNode;
+  admin: React.ReactNode;
+  seller: React.ReactNode;
+}) {
+
+   const { data } = await userService.getSession();
+
+  const userInfo = data.user;
+
   return (
     <SidebarProvider>
-      <AppSidebar />
+      <AppSidebar  user={userInfo} />
       <SidebarInset>
         <header className="flex h-16 shrink-0 items-center gap-2">
           <div className="flex items-center gap-2 px-4">
@@ -30,25 +44,18 @@ export default function Page() {
               <BreadcrumbList>
                 <BreadcrumbItem className="hidden md:block">
                   <BreadcrumbLink href="#">
-                    Building Your Application
+                    Dashboard Management
                   </BreadcrumbLink>
                 </BreadcrumbItem>
                 <BreadcrumbSeparator className="hidden md:block" />
                 <BreadcrumbItem>
-                  <BreadcrumbPage>Data Fetching</BreadcrumbPage>
+                  <BreadcrumbPage></BreadcrumbPage>
                 </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>
           </div>
         </header>
-        <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-          <div className="grid auto-rows-min gap-4 md:grid-cols-3">
-            <div className="bg-muted/50 aspect-video rounded-xl" />
-            <div className="bg-muted/50 aspect-video rounded-xl" />
-            <div className="bg-muted/50 aspect-video rounded-xl" />
-          </div>
-          <div className="bg-muted/50 min-h-screen flex-1 rounded-xl md:min-h-min" />
-        </div>
+       {userInfo.role === Roles.admin ? admin : seller}
       </SidebarInset>
     </SidebarProvider>
   )
