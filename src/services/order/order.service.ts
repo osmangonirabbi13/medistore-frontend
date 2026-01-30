@@ -83,7 +83,7 @@ export const orderService = {
     }
   },
 
-    updateQty: async (cartItemId: string, action: "inc" | "dec") => {
+  updateQty: async (cartItemId: string, action: "inc" | "dec") => {
     try {
       const cookieStore = await cookies();
 
@@ -91,7 +91,7 @@ export const orderService = {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
-          Cookie: cookieStore.toString(), 
+          Cookie: cookieStore.toString(),
         },
         body: JSON.stringify({ action }),
         cache: "no-store",
@@ -117,7 +117,7 @@ export const orderService = {
       const cookieStore = await cookies();
 
       const res = await fetch(`${API_URL}/api/orders/remove-from-cart`, {
-        method: "DELETE", 
+        method: "DELETE",
         headers: {
           "Content-Type": "application/json",
           Cookie: cookieStore.toString(),
@@ -138,6 +138,99 @@ export const orderService = {
       return data;
     } catch (e: any) {
       return { success: false, message: e?.message || "Something went wrong" };
+    }
+  },
+
+  checkoutFromCart: async (payload: any) => {
+    try {
+      const cookieStore = await cookies();
+
+      const res = await fetch(`${API_URL}/api/orders/checkout`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Cookie: cookieStore.toString(),
+        },
+        body: JSON.stringify(payload),
+        cache: "no-store",
+      });
+
+      const data = await res.json().catch(() => null);
+
+      if (!res.ok) {
+        return {
+          success: false,
+          message: data?.message || `Request failed (${res.status})`,
+        };
+      }
+
+      return data;
+    } catch (e: any) {
+      return { success: false, message: e?.message || "Something went wrong" };
+    }
+  },
+  getMyOrders: async () => {
+    try {
+      const cookieStore = await cookies();
+
+      const res = await fetch(`${API_URL}/api/orders/my-orders`, {
+        method: "GET",
+        headers: {
+          Cookie: cookieStore.toString(),
+        },
+        cache: "no-store",
+      });
+
+      const data = await res.json().catch(() => null);
+
+      if (!res.ok) {
+        return {
+          success: false,
+          message: data?.message || `Request failed (${res.status})`,
+          data: null,
+        };
+      }
+
+      return data;
+    } catch (e: any) {
+      return {
+        success: false,
+        message: e?.message || "Something went wrong",
+        data: null,
+      };
+    }
+  },
+
+  
+  getOrderDetails: async (orderId: string) => {
+    try {
+      const cookieStore = await cookies();
+
+      const res = await fetch(`${API_URL}/api/orders/${orderId}`, {
+        method: "GET",
+        headers: {
+          Cookie: cookieStore.toString(),
+        },
+        cache: "no-store",
+      });
+
+      const data = await res.json().catch(() => null);
+
+      if (!res.ok) {
+        return {
+          success: false,
+          message: data?.message || `Request failed (${res.status})`,
+          data: null,
+        };
+      }
+
+      return data;
+    } catch (e: any) {
+      return {
+        success: false,
+        message: e?.message || "Something went wrong",
+        data: null,
+      };
     }
   },
 };

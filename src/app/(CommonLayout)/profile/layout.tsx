@@ -21,8 +21,7 @@ export default function ProfileLayout({
   const menuItems = [
     { icon: Home, label: "Account Information", href: "/profile" },
     { icon: Package, label: "Order Details", href: "/profile/orders-details" },
-    { icon: MapPin, label: "Delivery Address", href: "/profile/addresses" },
-    { icon: Heart, label: "Wishlist", href: "/profile/wishlist" },
+    
   ];
 
   const activeLabel =

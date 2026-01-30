@@ -174,14 +174,9 @@ const isAdminOrSeller = role === Roles.admin || role === Roles.seller;
                     <>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem asChild>
-                        <Link href="profile/orders-details">Order Details</Link>
+                        <Link href="/profile/orders-details">Order Details</Link>
                       </DropdownMenuItem>
-                      <DropdownMenuItem asChild>
-                        <Link href="/delivery">Delivery Address</Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem asChild>
-                        <Link href="/wishlist">Wishlist</Link>
-                      </DropdownMenuItem>
+                      
                     </>
                   )}
 
