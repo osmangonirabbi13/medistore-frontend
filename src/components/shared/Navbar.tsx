@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
-import { LogOut, Menu, CircleX, LayoutDashboard } from "lucide-react";
+import { LogOut, Menu, CircleX, LayoutDashboard , ShoppingCart  } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -136,6 +136,14 @@ const isAdminOrSeller = role === Roles.admin || role === Roles.seller;
           
           <nav className="flex items-center gap-2">
             <ModeToggle />
+
+             <Link
+    href="/cart"
+    className="flex mr-2 items-center gap-1 text-primary font-medium hover:opacity-80"
+  >
+    <ShoppingCart className="h-5 w-5" />
+    Cart
+  </Link>
 
             {isPending ? null : isLoggedIn ? (
               <DropdownMenu>
