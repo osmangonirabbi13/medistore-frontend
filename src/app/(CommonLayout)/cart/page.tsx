@@ -11,7 +11,7 @@ const CartPage = async () => {
   }
 
   const cart = (res as any)?.data?.data; 
-  const cartItems = cart.items;
+  const cartItems = cart?.items;
 
  
   return <CartClient initialItems={cartItems} />;

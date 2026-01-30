@@ -6,23 +6,19 @@ export interface Medicine {
   manufacturer: string | null;
   description: string | null;
   otcNote: string | null;
-  price: string; 
+  price: string;
   stock: number;
   imageUrl: string | null;
   isActive: boolean;
   createdAt: string;
   updatedAt: string;
   category: {
-    id: string;
     name: string;
-    description: string | null;
-    isActive: boolean;
-    createdAt: string;
-    updatedAt: string;
-  };
-  seller: {
-    id: string;
-    name: string;
-    email: string;
   };
 }
+
+
+export type MedicineCreatePayload = Omit<
+  Medicine,
+  "id" | "createdAt" | "updatedAt" | "category"
+>;

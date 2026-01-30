@@ -20,20 +20,19 @@ function isProtectedPath(pathname: string) {
 export async function proxy(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
 
-  // Only protect selected routes (matcher already filters, this is extra safety)
+ 
   if (!isProtectedPath(pathname)) return NextResponse.next();
 
   const { data } = await userService.getSession();
 
-  // 1) Not authenticated
   if (!data?.user) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
 
   const role = data.user.role;
-  const home = ROLE_HOME[role] ?? "/profile"; // fallback (safe)
+  const home = ROLE_HOME[role] ?? "/profile"; 
 
-  // 2) If user tries to access another role's area -> redirect to own home
+  
   const isAdminArea = pathname.startsWith("/admin-dashboard");
   const isSellerArea = pathname.startsWith("/seller-dashboard");
   const isCustomerArea = pathname.startsWith("/profile");
@@ -48,7 +47,7 @@ export async function proxy(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // customer
+
   if (!isCustomerArea) {
     return NextResponse.redirect(new URL(home, request.url));
   }

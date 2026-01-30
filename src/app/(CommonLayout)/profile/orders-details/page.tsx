@@ -3,7 +3,8 @@ import Image from "next/image";
 import { Calendar } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { getMyOrders } from "../../../../actions/order.action";
+import { getMyOrders } from "@/actions/order.action";
+
 
 export default async function OrdersPage() {
   const res = await getMyOrders();
@@ -17,6 +18,8 @@ export default async function OrdersPage() {
   }
 
   const orders = res.data ?? [];
+
+ 
 
   return (
     <div className="bg-white rounded-lg shadow-sm p-6">

@@ -37,7 +37,6 @@ export const userService = {
   },
   getMyProfile: async () => {
     const Cookie = await cookieHeader();
-
     const res = await fetch(`${API_URL}/api/profile/me`, {
       method: "GET",
       headers: { Cookie },
@@ -57,40 +56,40 @@ export const userService = {
     return data;
   },
   updateMyProfile: async (payload: {
-  name: string;
-  email: string;
-  phone: string;
-}) => {
-  try {
-    const Cookie = await cookieHeader();
+    name: string;
+    email: string;
+    phone: string;
+  }) => {
+    try {
+      const Cookie = await cookieHeader();
 
-    const res = await fetch(`${API_URL}/api/profile/me`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-        Cookie,
-      },
-      body: JSON.stringify(payload),
-      cache: "no-store",
-    });
+      const res = await fetch(`${API_URL}/api/profile/me`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Cookie,
+        },
+        body: JSON.stringify(payload),
+        cache: "no-store",
+      });
 
-    const data = await res.json().catch(() => null);
+      const data = await res.json().catch(() => null);
 
-    if (!res.ok) {
+      if (!res.ok) {
+        return {
+          success: false,
+          message: data?.message || `Request failed (${res.status})`,
+          data: null,
+        };
+      }
+
+      return data;
+    } catch (e: any) {
       return {
         success: false,
-        message: data?.message || `Request failed (${res.status})`,
+        message: e?.message || "Something went wrong",
         data: null,
       };
     }
-
-    return data;
-  } catch (e: any) {
-    return {
-      success: false,
-      message: e?.message || "Something went wrong",
-      data: null,
-    };
-  }
-},
+  },
 };

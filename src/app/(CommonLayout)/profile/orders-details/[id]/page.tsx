@@ -141,13 +141,8 @@ export default async function OrdersDetailsPage({ params }: PageProps) {
           )}
         </div>
 
-        {/* Note */}
-        {items.length > 0 && (
-          <p className="text-xs text-gray-500 mt-3">
-            * যদি price 0 দেখায়, তাহলে backend থেকে item price field আসছে না (বা অন্য নামে আসছে)।
-            তখন item object এর field name অনুযায়ী উপরের price mapping update করতে হবে।
-          </p>
-        )}
+        
+        
       </div>
 
       {/* Summary + Shipping */}
