@@ -1,5 +1,5 @@
 import { cookies } from "next/headers";
-import {  MedicineCreatePayload } from "./../../types/product.type";
+import { MedicineCreatePayload } from "./../../types/product.type";
 import { env } from "@/env";
 
 const API_URL = env.API_URL;
@@ -7,10 +7,8 @@ const API_URL = env.API_URL;
 export interface CategoryData {
   name: string;
   description: string;
-  isActive : boolean
+  isActive: boolean;
 }
-
-
 
 export const sellerService = {
   createMedicine: async function (medicineData: MedicineCreatePayload) {
@@ -112,17 +110,152 @@ export const sellerService = {
 
       const data = await res.json().catch(() => null);
 
-      if (!res.ok || data?.success === false) {
+      console.log(data);
+
+      console.log(data);
+      if (!res.ok) {
         return {
           data: null,
-          error: { message: data?.message || "Failed to fetch medicines" },
+          error: {
+            message: data?.message || `Request failed (${res.status})`,
+            status: res.status,
+            raw: data,
+          },
+        };
+      }
+
+      if (data?.success === false) {
+        return {
+          data: null,
+          error: {
+            message: data?.message || "Failed to fetch medicines",
+            status: res.status,
+            raw: data,
+          },
         };
       }
 
       return { data, error: null };
-    } catch (error: any) {
-      return { data: null, error: { message: error?.message || "Something went wrong" } };
+    } catch (e: any) {
+      return {
+        data: null,
+        error: { message: e?.message || "Something went wrong" },
+      };
     }
   },
+  deleteMedicine: async function (medicineId: string) {
+    try {
+      const cookieStore = await cookies();
 
+      const res = await fetch(`${API_URL}/api/seller/medicines/${medicineId}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Cookie: cookieStore.toString(),
+        },
+      });
+
+      const data = await res.json().catch(() => null);
+
+      if (!res.ok || data?.success === false) {
+        return {
+          data: null,
+          error: { message: data?.message || "Delete failed" },
+        };
+      }
+
+      return { data, error: null };
+    } catch (e: any) {
+      return {
+        data: null,
+        error: { message: e?.message || "Something went wrong" },
+      };
+    }
+  },
+  updateMedicine: async function (id: string, payload: any) {
+    try {
+      const cookieStore = await cookies();
+
+      const res = await fetch(`${API_URL}/api/seller/medicines/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Cookie: cookieStore.toString(),
+        },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await res.json().catch(() => null);
+
+      if (!res.ok || data?.success === false) {
+        return {
+          data: null,
+          error: { message: data?.message || `Update failed (${res.status})` },
+        };
+      }
+
+      return { data, error: null };
+    } catch (e: any) {
+      return {
+        data: null,
+        error: { message: e?.message || "Something went wrong" },
+      };
+    }
+  },
+  getOrders: async function () {
+    try {
+      const cookieStore = await cookies();
+
+      const res = await fetch(`${API_URL}/api/seller/orders`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Cookie: cookieStore.toString(),
+        },
+        cache: "no-store",
+      });
+
+      const data = await res.json().catch(() => null);
+
+      if (!res.ok || data?.success === false) {
+        return {
+          data: null,
+          error: {
+            message: data?.message || `Request failed (${res.status})`,
+          },
+        };
+      }
+
+      return { data, error: null };
+    } catch (e: any) {
+      return {
+        data: null,
+        error: { message: e?.message || "Something went wrong" },
+      };
+    }
+  },
+  updateOrderStatus: async function (id: string, status: string) {
+  try {
+    const cookieStore = await cookies();
+
+    const res = await fetch(`${API_URL}/api/seller/orders/${id}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Cookie: cookieStore.toString(),
+      },
+      body: JSON.stringify({ status }),
+    });
+
+    const data = await res.json().catch(() => null);
+
+    if (!res.ok || data?.success === false) {
+      return { data: null, error: { message: data?.message || `Update failed (${res.status})` } };
+    }
+
+    return { data, error: null };
+  } catch (e: any) {
+    return { data: null, error: { message: e?.message || "Something went wrong" } };
+  }
+},
 };

@@ -1,6 +1,5 @@
 import { Route } from "@/types";
 
-
 export const sellerRoutes: Route[] = [
   {
     title: "Seller Management",
@@ -16,6 +15,10 @@ export const sellerRoutes: Route[] = [
       {
         title: "My Medicine",
         url: "/seller-dashboard/my-medicines",
+      },
+      {
+        title: "Get Orders",
+        url: "/seller-dashboard/get-orders",
       },
     ],
   },

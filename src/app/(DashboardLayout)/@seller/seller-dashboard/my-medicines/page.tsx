@@ -1,9 +1,10 @@
+import MyMedicineFormClient from "@/components/layouts/seller/myMedicineFormClient";
 
 
 const myMedicine = () => {
     return (
         <div>
-            <h1>my medicine</h1>
+            <MyMedicineFormClient/>
         </div>
     );
 };
