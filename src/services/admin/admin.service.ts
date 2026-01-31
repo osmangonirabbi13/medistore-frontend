@@ -35,38 +35,64 @@ export const adminService = {
       };
     }
   },
-  getAdminStats : async function(){
+  getAdminStats: async function () {
     const cookieStore = await cookies();
 
-     const res = await fetch(`${API_URL}/api/admin/stats`, {
-        method: "GET",
-        headers: {
-          Cookie: cookieStore.toString(),
-        },
-        cache: "no-store",
-      });
+    const res = await fetch(`${API_URL}/api/admin/stats`, {
+      method: "GET",
+      headers: {
+        Cookie: cookieStore.toString(),
+      },
+      cache: "no-store",
+    });
 
-      const data = await res.json().catch(() => null);
+    const data = await res.json().catch(() => null);
 
-      if (!res.ok) {
-        return {
-          success: false,
-          message: data?.message || `Request failed (${res.status})`,
-          data: null,
-        };
-      }
+    if (!res.ok) {
+      return {
+        success: false,
+        message: data?.message || `Request failed (${res.status})`,
+        data: null,
+      };
+    }
 
-      return data;
-
+    return data;
   },
-  getAllOrders : async function(){
+  getAllOrders: async function () {
     const cookieStore = await cookies();
 
-     const res = await fetch(`${API_URL}/api/admin/orders`, {
-        method: "GET",
+    const res = await fetch(`${API_URL}/api/admin/orders`, {
+      method: "GET",
+      headers: {
+        Cookie: cookieStore.toString(),
+      },
+      cache: "no-store",
+    });
+
+    const data = await res.json().catch(() => null);
+
+    if (!res.ok) {
+      return {
+        success: false,
+        message: data?.message || `Request failed (${res.status})`,
+        data: null,
+      };
+    }
+
+    return data;
+  },
+
+  updateUserBanStatus: async function (id: string, isBanned: boolean) {
+    try {
+      const cookieStore = await cookies();
+
+      const res = await fetch(`${API_URL}/api/admin/users/${id}`, {
+        method: "PATCH",
         headers: {
+          "Content-Type": "application/json",
           Cookie: cookieStore.toString(),
         },
+        body: JSON.stringify({ isBanned }),
         cache: "no-store",
       });
 
@@ -80,8 +106,17 @@ export const adminService = {
         };
       }
 
-      return data;
-
-  }
-  
+      return {
+        success: true,
+        message: data?.message || "User status updated",
+        data: data?.data ?? null,
+      };
+    } catch (e: any) {
+      return {
+        success: false,
+        message: e?.message || "Something went wrong",
+        data: null,
+      };
+    }
+  },
 };

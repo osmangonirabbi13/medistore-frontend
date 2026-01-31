@@ -8,6 +8,8 @@ const AdminPage = async () => {
 
   const getAllOrder = await getAllOrders()
 
+  
+
   console.log("getAllOrders" , getAllOrder);
 
   console.log(res);
