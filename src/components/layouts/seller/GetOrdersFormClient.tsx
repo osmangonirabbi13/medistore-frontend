@@ -63,7 +63,7 @@ export default function GetOrdersFormClient() {
   const [loading, setLoading] = useState(true);
   const [isPending, startTransition] = useTransition();
 
-  // ✅ modal states
+  
   const [open, setOpen] = useState(false);
   const [activeItem, setActiveItem] = useState<OrderItem | null>(null);
   const [nextStatus, setNextStatus] = useState<string>("");
@@ -94,7 +94,7 @@ export default function GetOrdersFormClient() {
 
   const openUpdateModal = (item: OrderItem) => {
     setActiveItem(item);
-    setNextStatus(item.status); // default current
+    setNextStatus(item.status); 
     setOpen(true);
   };
 
@@ -102,7 +102,7 @@ export default function GetOrdersFormClient() {
     if (!activeItem) return;
 
     const prevItems = items;
-    // optimistic update
+    
     setItems((p) => p.map((x) => (x.id === activeItem.id ? { ...x, status: nextStatus } : x)));
 
     startTransition(async () => {
@@ -113,13 +113,13 @@ export default function GetOrdersFormClient() {
 
         if ((res as any)?.error) {
           toast.error((res as any)?.error?.message || "Update failed", { id: toastId });
-          setItems(prevItems); // rollback
+          setItems(prevItems); 
           return;
         }
 
         if ((res as any)?.success === false) {
           toast.error((res as any)?.message || "Update failed", { id: toastId });
-          setItems(prevItems); // rollback
+          setItems(prevItems); 
           return;
         }
 
@@ -128,7 +128,7 @@ export default function GetOrdersFormClient() {
         setActiveItem(null);
       } catch {
         toast.error("Something went wrong", { id: toastId });
-        setItems(prevItems); // rollback
+        setItems(prevItems); 
       }
     });
   };

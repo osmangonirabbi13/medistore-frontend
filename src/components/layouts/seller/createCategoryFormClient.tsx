@@ -60,7 +60,7 @@ export function CreateCategoryFormClient() {
       try {
         const res = await createCategory(categoryData);
 
-        console.log(res);
+        
 
         if (res.error) {
           toast.error(res.error.message, { id: toastId });

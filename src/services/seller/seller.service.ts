@@ -110,9 +110,7 @@ export const sellerService = {
 
       const data = await res.json().catch(() => null);
 
-      console.log(data);
-
-      console.log(data);
+      
       if (!res.ok) {
         return {
           data: null,
