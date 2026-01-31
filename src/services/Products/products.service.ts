@@ -18,45 +18,33 @@ export interface GetAllMedicineParams {
 }
 
 export const productService = {
-  getAllProduct: async function (
-    params?: GetAllMedicineParams,
-    options?: ServiceOptions,
-  ) {
-    try {
-      const url = new URL(`${API_URL}/api/medicines`);
+ getAllProduct: async ({
+  page,
+  limit,
+  search,
+  sortBy,
+  sortOrder,
+}: {
+  page?: string;
+  limit?: string;
+  search?: string;
+  sortBy?: string;
+  sortOrder?: string;
+}) => {
+  const query = new URLSearchParams({
+    page: page ?? "1",
+    limit: limit ?? "12",
+    ...(search && { search }),
+    ...(sortBy && { sortBy }),
+    ...(sortOrder && { sortOrder }),
+  }).toString();
 
-      if (params) {
-        Object.entries(params).forEach(([key, value]) => {
-          if (value === undefined || value === null || value === "") return;
-          url.searchParams.set(key, String(value));
-        });
-      }
+  const res = await fetch(`${API_URL}/api/medicines?${query}`, {
+    cache: "no-store",
+  });
 
-      const config: RequestInit = {
-        cache: options?.cache,
-        next: {
-          tags: ["productPost"],
-          ...(typeof options?.revalidate === "number"
-            ? { revalidate: options.revalidate }
-            : {}),
-        },
-      };
-
-      const res = await fetch(url.toString(), config);
-      const data = await res.json();
-
-      if (!res.ok) {
-        return {
-          data: null,
-          error: { message: data?.message || "Failed to fetch products" },
-        };
-      }
-
-      return { data, error: null };
-    } catch (err) {
-      return { data: null, error: { message: "Something Went Wrong" } };
-    }
-  },
+  return res.json();
+},
    getProductId: async function (id: string) {
     try {
       const res = await fetch(`${API_URL}/api/medicines/${id}`);

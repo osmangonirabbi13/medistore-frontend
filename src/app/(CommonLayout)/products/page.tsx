@@ -1,51 +1,48 @@
 import ProductCard from "@/components/products/ProductCard";
-import ProductFilters from "@/components/products/ProductFilters";
+import SortByPrice from "@/components/products/SortByPrice";
 import PaginationControls from "@/components/ui/pagination-controls";
 import { productService } from "@/services/Products/products.service";
+
+type SearchParams = {
+  page?: string;
+  limit?: string;
+  search?: string;
+  sortBy?: string;
+  sortOrder?: "asc" | "desc";
+};
 
 export default async function ProductsPage({
   searchParams,
 }: {
-  searchParams: {
-    page: string;
-    limit: string;
-    search: string;
-  };
+  searchParams: Promise<SearchParams>;
 }) {
-  const {page} =await  searchParams;
-  const {limit} = await  searchParams;
-  const {search} = await searchParams;
- 
-  const data = await productService.getAllProduct({
+  const params = await searchParams;
+
+  const page = params?.page ?? "1";
+  const limit = params?.limit ?? "12";
+  const search = params?.search ?? "";
+  const sortBy = params?.sortBy ?? "createdAt";
+  const sortOrder = params?.sortOrder ?? "desc";
+
+  const res = await productService.getAllProduct({
     page,
     limit,
     search,
-    
-});
+    sortBy,
+    sortOrder,
+  });
 
-  const products = data.data?.data || [];
-  const pagination = data.data?.pagination || {
-    limit,
-    page,
-    total: 0,
-    totalPages: 1,
-  };
-
-  
-  const categories = []; 
+  const products = Array.isArray(res?.data) ? res.data : [];
+  const pagination = res?.pagination;
 
   return (
-    <div className="container mx-auto px-4 py-6 space-y-4">
-      <div className="flex items-end justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-semibold">All Products</h1>
-          <p className="text-sm text-muted-foreground">
-            Browse medicines with search & filters.
-          </p>
-        </div>
-      </div>
+    <div className="container mx-auto px-4 py-6 space-y-6">
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-semibold">All Products</h1>
 
-      {/* <ProductFilters categories={categories} /> */}
+        
+        <SortByPrice />
+      </div>
 
       {products.length === 0 ? (
         <div className="rounded-lg border p-10 text-center text-muted-foreground">
@@ -59,9 +56,7 @@ export default async function ProductsPage({
         </div>
       )}
 
-      <div className="pt-2">
-        <PaginationControls meta={pagination} />
-      </div>
+      <PaginationControls meta={pagination} />
     </div>
   );
 }
