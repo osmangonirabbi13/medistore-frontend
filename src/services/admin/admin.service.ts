@@ -119,4 +119,69 @@ export const adminService = {
       };
     }
   },
+  getSellerRequests: async (params: { status?: string }) => {
+    try {
+      const cookieStore = await cookies();
+
+      const status = params.status ?? "PENDING";
+      const res = await fetch(`${API_URL}/api/seller/requests?status=${status}`, {
+        method: "GET",
+        headers: {
+          Cookie: cookieStore.toString(),
+        },
+        cache: "no-store",
+      });
+
+      const data = await res.json().catch(() => null);
+
+      if (!res.ok) {
+        return {
+          success: false,
+          message: data?.message || `Request failed (${res.status})`,
+          data: [],
+        };
+      }
+
+      return data; 
+    } catch (e: any) {
+      return {
+        success: false,
+        message: e?.message || "Something went wrong",
+        data: [],
+      };
+    }
+  },
+
+  approveSeller: async (sellerUserId: string) => {
+    try {
+      const cookieStore = await cookies();
+
+      const res = await fetch(`${API_URL}/api/seller/${sellerUserId}/approve`, {
+        method: "PATCH",
+        headers: {
+          Cookie: cookieStore.toString(),
+          "Content-Type": "application/json",
+        },
+        cache: "no-store",
+      });
+
+      const data = await res.json().catch(() => null);
+
+      if (!res.ok) {
+        return {
+          success: false,
+          message: data?.message || `Request failed (${res.status})`,
+          data: null,
+        };
+      }
+
+      return data;
+    } catch (e: any) {
+      return {
+        success: false,
+        message: e?.message || "Something went wrong",
+        data: null,
+      };
+    }
+  }
 };

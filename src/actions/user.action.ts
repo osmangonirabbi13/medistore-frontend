@@ -14,3 +14,13 @@ export const updateMyProfile = async (payload: {
 }) => {
   return await userService.updateMyProfile(payload);
 };
+
+
+export const becomeSeller = async (pharmacyName: string) => {
+  return await userService.becomeSeller(pharmacyName);
+};
+
+
+export const getMySellerStatus = async () => {
+  return await userService.getMyProfile(); 
+};

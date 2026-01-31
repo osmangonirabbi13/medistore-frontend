@@ -1,5 +1,9 @@
 import { redirect } from "next/navigation";
 
 export default function sellerDashboard() {
-  return redirect("/seller-dashboard/create-product");
+  return (
+    <div>
+      <h1>hello seller </h1>
+    </div>
+  )
 }

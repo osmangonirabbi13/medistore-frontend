@@ -16,3 +16,9 @@ export const getAllOrders = async () => {
 export const updateUserBanStatus = async (id: string, isBanned: boolean) => {
   return await adminService.updateUserBanStatus(id, isBanned);
 };
+
+
+
+export const approveSeller = async (sellerUserId: string) => {
+  return await adminService.approveSeller(sellerUserId);
+};

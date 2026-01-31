@@ -92,4 +92,33 @@ export const userService = {
       };
     }
   },
+ becomeSeller: async (pharmacyName: string) => {
+  try {
+    const cookieStore = await cookies();
+
+    const res = await fetch(`${API_URL}/api/seller/become-seller`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Cookie: cookieStore.toString(),
+      },
+      body: JSON.stringify({ pharmacyName }),
+      cache: "no-store",
+    });
+
+    const data = await res.json().catch(() => null);
+
+    if (!res.ok) {
+      return {
+        success: false,
+        message: data?.message || `Request failed (${res.status})`,
+        data: null,
+      };
+    }
+
+    return data;
+  } catch (e: any) {
+    return { success: false, message: e?.message || "Something went wrong", data: null };
+  }
+}
 };
