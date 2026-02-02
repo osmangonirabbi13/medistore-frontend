@@ -11,63 +11,82 @@ const cookieHeader = async () => {
     .map((c) => `${c.name}=${c.value}`)
     .join("; ");
 };
+
 export const userService = {
   getSession: async function () {
     try {
-      const cookieStore = await cookies();
+      const cookie = await cookieHeader();
+
+      if (!cookie) {
+        return { data: null, error: { message: "No cookie" } };
+      }
 
       const res = await fetch(`${AUTH_URL}/get-session`, {
         headers: {
-          Cookie: cookieStore.toString(),
+          Cookie: cookie,
         },
         cache: "no-store",
       });
 
-      const session = await res.json();
+      if (!res.ok) {
+        return { data: null, error: { message: "Failed to fetch session" } };
+      }
 
-      if (session === null) {
-        return { data: null, error: { message: "Session is missing " } };
+      const session = await res.json().catch(() => null);
+
+      if (!session?.user) {
+        return { data: null, error: { message: "Session missing user" } };
       }
 
       return { data: session, error: null };
-    } catch (error) {
-      console.error(error);
+    } catch (err) {
       return { data: null, error: { message: "Something Went Wrong" } };
     }
   },
+
   getMyProfile: async () => {
-    const Cookie = await cookieHeader();
-    const res = await fetch(`${API_URL}/api/profile/me`, {
-      method: "GET",
-      headers: { Cookie },
-      cache: "no-store",
-    });
+    try {
+      const cookie = await cookieHeader();
 
-    const data = await res.json().catch(() => null);
+      const res = await fetch(`${API_URL}/api/profile/me`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Cookie: cookie,
+          Origin: env.AUTH_URL,
+        },
+        cache: "no-store",
+      });
 
-    if (!res.ok) {
+      const data = await res.json().catch(() => null);
+
+      if (!res.ok) {
+        return {
+          success: false,
+          message: data?.message || `Request failed (${res.status})`,
+          data: null,
+        };
+      }
+
+      return data;
+    } catch (e: any) {
       return {
         success: false,
-        message: data?.message || `Request failed (${res.status})`,
+        message: e?.message || "Something went wrong",
         data: null,
       };
     }
-
-    return data;
   },
-  updateMyProfile: async (payload: {
-    name: string;
-    email: string;
-    phone: string;
-  }) => {
+
+  updateMyProfile: async (payload: { name?: string; phone?: string }) => {
     try {
-      const Cookie = await cookieHeader();
+      const cookie = await cookieHeader();
 
       const res = await fetch(`${API_URL}/api/profile/me`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
-          Cookie,
+          Cookie: cookie,
         },
         body: JSON.stringify(payload),
         cache: "no-store",
@@ -92,33 +111,38 @@ export const userService = {
       };
     }
   },
- becomeSeller: async (pharmacyName: string) => {
-  try {
-    const cookieStore = await cookies();
 
-    const res = await fetch(`${API_URL}/api/seller/become-seller`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Cookie: cookieStore.toString(),
-      },
-      body: JSON.stringify({ pharmacyName }),
-      cache: "no-store",
-    });
+  becomeSeller: async (pharmacyName: string) => {
+    try {
+      const cookie = await cookieHeader();
 
-    const data = await res.json().catch(() => null);
+      const res = await fetch(`${API_URL}/api/seller/become-seller`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Cookie: cookie,
+        },
+        body: JSON.stringify({ pharmacyName }),
+        cache: "no-store",
+      });
 
-    if (!res.ok) {
+      const data = await res.json().catch(() => null);
+
+      if (!res.ok) {
+        return {
+          success: false,
+          message: data?.message || `Request failed (${res.status})`,
+          data: null,
+        };
+      }
+
+      return data;
+    } catch (e: any) {
       return {
         success: false,
-        message: data?.message || `Request failed (${res.status})`,
+        message: e?.message || "Something went wrong",
         data: null,
       };
     }
-
-    return data;
-  } catch (e: any) {
-    return { success: false, message: e?.message || "Something went wrong", data: null };
-  }
-}
+  },
 };

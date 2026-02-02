@@ -4,11 +4,14 @@ import { Badge } from "@/components/ui/badge";
 import { productService } from "@/services/Products/products.service";
 import AddToCartButton from "@/components/layouts/AddToCartButton";
 import { userService } from "@/services/user/user.service";
+// import { cookies } from "next/headers";
+
+export const dynamic = "force-dynamic";
 
 export default async function ProductDetails({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
 
@@ -19,9 +22,15 @@ export default async function ProductDetails({
   const price = Number(product.price || 0);
   const outOfStock = product.stock <= 0;
 
-  
-  const session = await userService.getSession(); 
-  const userId = session?.data?.user?.id;
+  // সেশন হ্যান্ডলিং
+  // const cookieStore = await cookies();
+  // const cookieHeader = cookieStore
+  //   .getAll()
+  //   .map((c) => `${c.name}=${c.value}`)
+  //   .join("; ");
+
+  const session = await userService.getSession();
+  const userId = session?.data?.user?.id || "";
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -43,10 +52,16 @@ export default async function ProductDetails({
 
           <div className="flex items-center gap-3">
             <Badge>{product.category?.name}</Badge>
-            {product.isActive ? <Badge>Available</Badge> : <Badge variant="secondary">Inactive</Badge>}
+            {product.isActive ? (
+              <Badge>Available</Badge>
+            ) : (
+              <Badge variant="secondary">Inactive</Badge>
+            )}
           </div>
 
-          <div className="text-2xl font-semibold text-primary">৳ {price.toFixed(2)}</div>
+          <div className="text-2xl font-semibold text-primary">
+            ৳ {price.toFixed(2)}
+          </div>
 
           <div className="text-sm text-muted-foreground">
             {outOfStock ? (
@@ -56,10 +71,12 @@ export default async function ProductDetails({
             )}
           </div>
 
+          {/* ✅ আপডেট করা বাটন কম্পোনেন্ট */}
           <AddToCartButton
             medicineId={product.id}
-            userId={userId || ""}
-            disabled={outOfStock || !product.isActive || !userId}
+            userId={userId}
+            stock={product.stock} // ✅ Stock পাস করা হলো
+            disabled={outOfStock || !product.isActive}
           />
         </div>
       </div>

@@ -1,19 +1,21 @@
 import { getCart } from "@/actions/order.action";
 import CartClient from "@/components/layouts/CartClient";
 
+
+export const dynamic = "force-dynamic";
+
 const CartPage = async () => {
-  const res = await getCart();
+  let cartItems: any[] = [];
 
-  
-
-  if (res?.error) {
-    console.log("getCart error:", res.error);
+  try {
+    const res = await getCart();
+    if (res?.data) {
+       cartItems = res.data.items || res.data.data?.items || [];
+    }
+  } catch (error) {
+    console.error("Failed to load cart:", error);
   }
 
-  const cart = (res as any)?.data?.data; 
-  const cartItems = cart?.items;
-
- 
   return <CartClient initialItems={cartItems} />;
 };
 

@@ -4,8 +4,10 @@ import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { getMyProfile, updateMyProfile } from "../../../actions/user.action";
+
 import { toast } from "sonner";
+import { getMyProfile, updateMyProfile } from "@/actions/user.action";
+
 
 const ProfilePage = () => {
   const [loading, setLoading] = useState(true);
@@ -20,7 +22,6 @@ const ProfilePage = () => {
   useEffect(() => {
     const loadProfile = async () => {
       const res = await getMyProfile();
-
       if (res?.success) {
         setValues({
           name: res.data?.name || "",
@@ -47,7 +48,6 @@ const ProfilePage = () => {
     setSaving(true);
 
     const res = await updateMyProfile(values);
-
     if (res?.success) {
       toast.success("Profile updated successfully");
     } else {

@@ -3,27 +3,34 @@
 import { AddToCartData, orderService } from "@/services/order/order.service";
 import { updateTag } from "next/cache";
 
-export const addTOCart = async (data: AddToCartData) => {
-  const res = await orderService.addToCart(data);
-  updateTag("cart");
+
+export const addTOCart = async (payload: AddToCartData) => {
+  const res = await orderService.addToCart(payload);
+
+  updateTag("cart")
   return res;
 };
 
 export const getCart = async () => {
-  const res = await orderService.getCart();
-  return res;
+  return await orderService.getCart({ cache: "no-store" });
 };
 
 export const updateQty = async (cartItemId: string, action: "inc" | "dec") => {
-  return await orderService.updateQty(cartItemId, action);
+  const res = await orderService.updateQty(cartItemId, action);
+   updateTag("cart")
+  return res;
 };
 
 export const removeFromCart = async (medicineId: string) => {
-  return await orderService.removeFromCart(medicineId);
+  const res = await orderService.removeFromCart(medicineId);
+   updateTag("cart")
+  return res;
 };
 
 export const checkoutFromCart = async (payload: any) => {
-  return await orderService.checkoutFromCart(payload);
+  const res = await orderService.checkoutFromCart(payload);
+  updateTag("cart")
+  return res;
 };
 
 export const getMyOrders = async () => {
