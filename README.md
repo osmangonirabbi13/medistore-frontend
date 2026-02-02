@@ -141,12 +141,6 @@ npm install
 npm run dev
 ```
 
-### Prisma setup (Backend)
-
-```bash
-npx prisma migrate dev
-```
-
 ---
 
 ##  Role Based Routes
